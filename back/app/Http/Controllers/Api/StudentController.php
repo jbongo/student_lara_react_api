@@ -18,10 +18,10 @@ class StudentController extends Controller
         
         $validator = Validator::make($request->all(), [
         
-            "nom" => "required|max:2",
+            "nom" => "required|max:191",
             "cours" => "required|max:191",
             "email" => "required|email|max:191",
-            "telephone" => "required|numeric|max:10",
+            "telephone" => "required|numeric",
         ]); 
         
         if($validator->fails()){

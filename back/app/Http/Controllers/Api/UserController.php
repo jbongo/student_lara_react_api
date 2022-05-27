@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,6 +17,25 @@ class UserController extends Controller
     
     public function login(Request $request){
     
+        $email = $request->email;
+        $password = Hash::make($request->password);
+
+        // return $request->only('email','password');
+       if( !Auth::attempt($request->only('email','password') ) ) {
+
+            return Response([
+                "message" => "Email ou Mot de passe incorrecte"
+
+            ], 401);
+
+       }
+       $user = Auth::user();
+       $token = $user->createToken('token')->plainTextToken;
+
+       return $token;
+
+
+       return $user;
     
     }
     
