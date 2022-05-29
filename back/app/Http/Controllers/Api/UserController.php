@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cookie;
 
 
 class UserController extends Controller
@@ -18,24 +19,24 @@ class UserController extends Controller
     public function login(Request $request){
     
         $email = $request->email;
-        $password = Hash::make($request->password);
 
-        // return $request->only('email','password');
-       if( !Auth::attempt($request->only('email','password') ) ) {
+        if( !Auth::attempt($request->only('email','password') ) ) {
 
             return Response([
                 "message" => "Email ou Mot de passe incorrecte"
 
             ], 401);
 
-       }
-       $user = Auth::user();
-       $token = $user->createToken('token')->plainTextToken;
+        }
+        $user = Auth::user();
+        $token = $user->createToken('token')->plainTextToken;
 
-       return $token;
+        $cookie = cookie('jwt', $token, 60*24) ;// 24h
 
 
-       return $user;
+       return Response([
+            "message" => "Connexion réussie",
+       ])->withCookie($cookie);
     
     }
     
@@ -69,5 +70,20 @@ class UserController extends Controller
             "message" => "Compte créé !"
         ]);
    
+    }
+
+
+    public function user(){
+
+        return Auth::user();
+    }
+
+    public function logout(){
+
+        $cookie = Cookie::forget('jwt');
+
+        return Response([
+            "message" => "succès"
+        ])->withCookie($cookie);
     }
 }
